@@ -10,10 +10,10 @@ class App extends Component {
   }
 
   componentDidMount() {
-    this.searchCats("?format=xml&results_per_page=12&type=png&size=small");
+    this.getKitties("?format=xml&results_per_page=12&type=png&size=small");
   }
 
-  searchCats = query => {
+  getKitties = query => {
     API.search(query)
       .then(res => {
         const $data = $($.parseXML(res.data));
@@ -29,6 +29,12 @@ class App extends Component {
       .catch(err => console.log(err));
   }
 
+  clickKitty = i => {
+    const kitties = this.state.kitties;
+    kitties[i].wasClicked = true;
+    this.setState({ kitties });
+  }
+
   render() {
     return (
       <div>
@@ -38,7 +44,9 @@ class App extends Component {
             {this.state.kitties.map((i, kitty) => (
               <ImageCard 
                 key={i}
+                i={i}
                 src={kitty.src}
+                clickKitty={this.clickKitty}
               />
             ))}
           </div>
