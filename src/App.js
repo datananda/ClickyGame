@@ -13,11 +13,11 @@ class App extends Component {
   }
 
   componentDidMount() {
-    this.getKitties("?format=xml&results_per_page=12&type=png&size=small");
+    this.getKitties(12);
   }
 
-  getKitties = query => {
-    API.search(query)
+  getKitties = numKitties => {
+    API.search(numKitties)
       .then(res => {
         const $data = $($.parseXML(res.data));
         const $urls = $data.find("url");
@@ -33,8 +33,7 @@ class App extends Component {
       .catch(err => console.log(err));
   }
 
-  rearrangeKitties = () => {
-    const kitties = this.state.kitties;
+  rearrangeKitties = kitties => {
     for (let i = kitties.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       const temp = kitties[i];
@@ -44,20 +43,28 @@ class App extends Component {
     return kitties;
   }
 
+  checkIfAlreadyClicked = id => {
+    const clickedKitty = this.state.kitties.filter(kitty => kitty.id === id);
+    return clickedKitty[0].wasClicked ? true : false;
+  }
+
   clickKitty = id => {
-    const kitties = this.state.kitties.map((kitty) => {
-      if (kitty.id === id) {
-        if (!kitty.wasClicked) {
-          this.setState({ score: this.state.score + 1 })
+    if (this.checkIfAlreadyClicked(id)) {
+      this.setState({ score: 0 });
+      this.getKitties(12);
+    } else {
+      const kitties = this.state.kitties.map(kitty => {
+        if (kitty.id === id) {
+          kitty.wasClicked = true;
         }
-        kitty.wasClicked = true;
-      }
-      return kitty;
-    });
-    this.setState({ kitties });
-    this.setState({
-      kitties: this.rearrangeKitties()
-    });
+        return kitty;
+      });
+      this.setState({
+        topScore: this.state.score + 1 > this.state.topScore ? this.state.score + 1 : this.state.topScore,
+        score: this.state.score + 1,
+        kitties: this.rearrangeKitties(kitties) 
+      });
+    }
   }
 
   render() {
