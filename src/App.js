@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import $ from "jquery";
 import ImageCard from "./components/ImageCard";
 import Navbar from "./components/Navbar";
+import Alert from "./components/Alert";
 import API from "./utils/API";
 import "./App.css";
 
@@ -9,7 +10,11 @@ class App extends Component {
   state = {
     score: 0,
     topScore: 0,
-    kitties: []
+    kitties: [],
+    alert: {
+      type: "",
+      message: ""
+    }
   }
 
   componentDidMount() {
@@ -21,7 +26,7 @@ class App extends Component {
       .then(res => {
         const $data = $($.parseXML(res.data));
         const $urls = $data.find("url");
-        const kitties = $urls.map(function() {
+        const kitties = $urls.map(function () {
           return {
             id: $(this).html().split("id=")[1].split("&amp;")[0],
             src: $(this).html(),
@@ -50,7 +55,13 @@ class App extends Component {
 
   clickKitty = id => {
     if (this.checkIfAlreadyClicked(id)) {
-      this.setState({ score: 0 });
+      this.setState({ 
+        score: 0,
+        alert: {
+          type: "danger",
+          message: "Oops. You already clicked that kitty. Game Over! Starting a new game...",
+        }
+      });
       this.getKitties(12);
     } else {
       const kitties = this.state.kitties.map(kitty => {
@@ -62,7 +73,11 @@ class App extends Component {
       this.setState({
         topScore: this.state.score + 1 > this.state.topScore ? this.state.score + 1 : this.state.topScore,
         score: this.state.score + 1,
-        kitties: this.rearrangeKitties(kitties) 
+        kitties: this.rearrangeKitties(kitties),
+        alert: {
+          type: "success",
+          message: "Great guess! You hadn't clicked that kitty yet."
+        }
       });
     }
   }
@@ -70,14 +85,18 @@ class App extends Component {
   render() {
     return (
       <div>
-        <Navbar 
+        <Navbar
           score={this.state.score}
           topScore={this.state.topScore}
         />
         <div className="container">
           <div className="row">
+            <Alert 
+              type={this.state.alert.type}
+              message={this.state.alert.message}
+            />
             {this.state.kitties.map((kitty) => (
-              <ImageCard 
+              <ImageCard
                 key={kitty.id}
                 id={kitty.id}
                 src={kitty.src}

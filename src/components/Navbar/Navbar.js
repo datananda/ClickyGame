@@ -2,7 +2,7 @@ import React from "react";
 import "./Navbar.css";
 
 const Navbar = props => (
-    <nav className="navbar navbar-light bg-light mb-4">
+    <nav className="navbar navbar-light bg-light mb-3">
         <div className="container">
             <span className="navbar-brand mb-0 h1">ClickyKitty</span>
             <span className="navbar-text">
