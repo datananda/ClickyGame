@@ -3,6 +3,7 @@ import $ from "jquery";
 import ImageCard from "./components/ImageCard";
 import Navbar from "./components/Navbar";
 import Alert from "./components/Alert";
+import Modal from "./components/Modal";
 import API from "./utils/API";
 import "./App.css";
 
@@ -14,7 +15,8 @@ class App extends Component {
     alert: {
       type: "",
       message: ""
-    }
+    },
+    showInstructions: false,
   }
 
   componentDidMount() {
@@ -82,12 +84,21 @@ class App extends Component {
     }
   }
 
+  toggleInstructions = () => {
+    this.setState({ showInstructions: !this.state.showInstructions })
+  }
+
   render() {
     return (
       <div>
         <Navbar
           score={this.state.score}
           topScore={this.state.topScore}
+          toggleInstructions={this.toggleInstructions}
+        />
+        <Modal 
+          showInstructions={this.state.showInstructions}
+          toggleInstructions={this.toggleInstructions}
         />
         <div className="container">
           <div className="row">
